@@ -1,6 +1,6 @@
 # 行业→象限映射表 维护指南
 
-> 映射表文件: `/mnt/redbox/正方形系统/v2.3/src/rules/national_strategy.py`
+> 映射表文件: `<本地正方形系统路径>/src/rules/national_strategy.py`
 > 最后更新: 2026-05-26
 
 ## 何时需要更新
@@ -56,7 +56,7 @@ URGENCY_BONUS = {
 ### 4. 验证
 
 ```bash
-cd /mnt/redbox/正方形系统/v2.3
+cd <本地正方形系统路径>
 python3 -c "
 from src.rules.registry import RuleRegistry
 from src.rules import national_strategy, value, industry, emotion, trend, macro, risk
@@ -83,7 +83,7 @@ for j in reg.evaluate_dimension('industry', ctx):
 
 ### 5. 写入缺陷文档
 
-更新 `/mnt/redbox/正方形系统/v2.3/已知缺陷&维修记录-2026-05-25.md` 中 #13 的"已知局限"说明。
+更新 `<本地正方形系统路径>/已知缺陷&维修记录-2026-05-25.md` 中 #13 的"已知局限"说明。
 
 ## 匹配逻辑说明
 

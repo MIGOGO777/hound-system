@@ -1,7 +1,7 @@
 # Phase 4 质量验证报告 — Serenity SKILL.md
 
 > 验证时间: 2026-06-17
-> 验证对象: /home/sui/.hermes/profiles/papa/skills/serenity-perspective/SKILL.md
+> 验证对象: <本地 hermes profile 技能路径>/serenity-perspective/SKILL.md
 > 调研材料: references/research/ (13 文件，~196KB)
 > 验证范围: Sanity Check + 通过标准检查 + 概念归属检查
 

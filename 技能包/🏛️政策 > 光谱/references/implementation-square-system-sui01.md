@@ -4,9 +4,9 @@
 
 ## 文件位置
 
-- 规则文件：`/mnt/redbox/正方形系统/v2.3/src/rules/national_strategy.py`
-- 注册点：`/mnt/redbox/正方形系统/v2.3/src/core/engine.py` 第94行
-- 缺陷文档：`/mnt/redbox/正方形系统/v2.3/已知缺陷&维修记录-2026-05-25.md`（#13）
+- 规则文件：`<本地正方形系统路径>/src/rules/national_strategy.py`
+- 注册点：`<本地正方形系统路径>/src/core/engine.py` 第94行
+- 缺陷文档：`<本地正方形系统路径>/已知缺陷&维修记录-2026-05-25.md`（#13）
 
 ## 规则概况
 

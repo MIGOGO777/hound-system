@@ -36,7 +36,7 @@ description: 猎犬系统主agent调度协议。规定如何接收用户意图�
 
 ## §6 议题卡回收与审核
 格式校验(11字段不留空) → 去重(同标的多来源合并共振线索) → 排序(置信度×信号强度) → 反编造审计(缺口如实标注Builder#12) → 交付清单给用户/M2。
-- 输出存档：主agent调用 `ReportConfig().save(cards, recipe="配方名")`，报告自动存入 `/mnt/redbox/金色报告/{当天日期}/`。
+- 输出存档：主agent调用 `ReportConfig().save(cards, recipe="配方名")`，报告自动存入 `<$HOUND_REPORT_DIR>/{当天日期}/`。
 
 ## §7 组合配方库
 

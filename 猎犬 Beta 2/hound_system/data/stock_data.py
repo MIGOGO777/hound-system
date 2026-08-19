@@ -946,120 +946,37 @@ class JisiluCookieError(RuntimeError):
     """
 
 
-# ── Chrome cookie 解密（Linux，零第三方数据依赖）────────────────────────────────
-# 抄 browser_cookie3 的 Linux Chrome v10/v11 解密逻辑，自带实现不引入该库。
-# 依赖 secretstorage(读 keyring) + pycryptodome(AES)，均为系统级库非数据 wrapper。
-
-_CHROME_COOKIE_PATHS = [
-    "~/.config/google-chrome/Default/Cookies",
-    "~/.config/google-chrome/Default/Network/Cookies",
-]
-
-
-def _get_chrome_safe_storage_key() -> bytes:
-    """从系统 keyring 取 Chrome Safe Storage 密钥，派生 AES key。
-
-    Chrome v11 cookie 用 keyring 里的 "Chrome Safe Storage" 口令，
-    经 PBKDF2(SHA1, 1 iter, salt=b'saltysalt') 派生 16 字节 AES key。
-    取不到 keyring 时回退到 Chrome 默认口令 'peanuts'(v10)。
-    """
-    from hashlib import pbkdf2_hmac
-
-    password = b"peanuts"  # v10 默认；v11 会被下面的 keyring 覆盖
-    try:
-        import secretstorage
-
-        conn = secretstorage.dbus_init()
-        collection = secretstorage.get_default_collection(conn)
-        for item in collection.get_all_items():
-            if item.get_label() == "Chrome Safe Storage":
-                password = item.get_secret()
-                break
-    except Exception as e:
-        logger.warning("读取 keyring 失败，回退默认口令: %s", e)
-
-    return pbkdf2_hmac("sha1", password, b"saltysalt", 1, dklen=16)
-
-
-def _decrypt_chrome_value(encrypted: bytes, key: bytes) -> str:
-    """解密单个 Chrome cookie 值（v10/v11 = AES-128-CBC）。"""
-    from Crypto.Cipher import AES
-
-    if not encrypted or encrypted[:3] not in (b"v10", b"v11"):
-        # 未加密（旧格式）或空值，直接当明文
-        return encrypted.decode("utf-8", "ignore") if encrypted else ""
-
-    iv = b" " * 16
-    payload = encrypted[3:]
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    decrypted = cipher.decrypt(payload)
-    # 去 PKCS7 padding
-    pad = decrypted[-1]
-    if 1 <= pad <= 16:
-        decrypted = decrypted[:-pad]
-    # Chrome v10+ 在明文前加了 32 字节 SHA256 域名哈希，跳过
-    return decrypted[32:].decode("utf-8", "ignore")
+# ── 集思录 cookie（从环境变量读取，不读取本地浏览器）──────────────────
+# cookie 由用户手动从 jisilu.cn 登录态中导出并注入环境变量（如
+# JISILU_COOKIE="kbzw__user_login=xxx; ..."）。本仓库不附带任何浏览器
+# cookie 读取/解密逻辑。
 
 
 def load_chrome_cookie(domain: str = "jisilu.cn") -> dict[str, str]:
-    """读取本地 Chrome 中指定域名的已登录 cookie（明文 dict）。
+    """读取环境变量 JISILU_COOKIE 中的登录 cookie（明文 dict）。
 
-    依赖用户已在本地 Chrome 登录该站点。Chrome 运行时会锁库，
-    故复制到临时文件再读。读不到返回空 dict，由上层决定如何通知。
+    不再读取本地 Chrome Cookie 库（避免浏览器凭据解密逻辑落入公开仓库）。
+    用户需自行登录 jisilu.cn 后，将 Cookie 值导出到环境变量，例如：
+
+        export JISILU_COOKIE="kbzw__user_login=xxxx; session=yyyy"
 
     Args:
-        domain: cookie 域名关键字，如 'jisilu.cn'
+        domain: 保留参数，兼容原调用签名。
 
     Returns:
-        {cookie名: cookie值}，失败返回 {}
+        {cookie名: cookie值}，未配置时返回 {}
     """
     import os
-    import shutil
-    import sqlite3
-    import tempfile
 
-    src = None
-    for p in _CHROME_COOKIE_PATHS:
-        ep = os.path.expanduser(p)
-        if os.path.exists(ep):
-            src = ep
-            break
-    if not src:
-        logger.warning("未找到 Chrome Cookies 文件")
-        return {}
-
-    tmp = tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False).name
-    try:
-        shutil.copy2(src, tmp)
-        key = _get_chrome_safe_storage_key()
-        conn = sqlite3.connect(tmp)
-        try:
-            rows = conn.execute(
-                "SELECT name, encrypted_value, value FROM cookies "
-                "WHERE host_key LIKE ?",
-                (f"%{domain}%",),
-            ).fetchall()
-        finally:
-            conn.close()
-
-        result: dict[str, str] = {}
-        for name, enc, plain in rows:
-            if plain:
-                result[name] = plain
-            elif enc:
-                try:
-                    result[name] = _decrypt_chrome_value(enc, key)
-                except Exception as e:
-                    logger.warning("解密 cookie [%s] 失败: %s", name, e)
-        return result
-    except Exception as e:
-        logger.warning("读取 Chrome cookie 失败: %s", e)
-        return {}
-    finally:
-        try:
-            os.unlink(tmp)
-        except OSError:
-            pass
+    raw = os.environ.get("JISILU_COOKIE", "")
+    result: dict[str, str] = {}
+    for pair in raw.split(";"):
+        if "=" not in pair:
+            continue
+        k, v = pair.strip().split("=", 1)
+        if k:
+            result[k.strip()] = v.strip()
+    return result
 
 
 # ── 集思录可转债（需登录 cookie）──────────────────────────────────────────────

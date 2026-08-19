@@ -985,14 +985,14 @@ class ReportConfig:
 
     Usage::
 
-        config = ReportConfig()  # 默认路径 /mnt/redbox/金色报告/
+        config = ReportConfig()  # 默认路径由 $HOUND_REPORT_DIR 指定（未设置则为 ./reports）
         config.save(cards, recipe="资金+价值")
     """
 
-    base_dir: str = "/mnt/redbox/金色报告"
+    base_dir: str = os.environ.get("HOUND_REPORT_DIR", "./reports")
 
     def today_dir(self) -> str:
-        """返回当天日期子目录路径，如 /mnt/redbox/金色报告/2026-06-30/"""
+        """返回当天日期子目录路径，如 <报告根目录>/2026-06-30/"""
         return os.path.join(self.base_dir, datetime.now().strftime("%Y-%m-%d"))
 
     def save(self, cards: list[dict], recipe: str = "单技能") -> str:

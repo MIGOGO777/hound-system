@@ -1,1 +1,1 @@
-/home/sui/claude workspace/猎犬系统/技能包/🎭情绪 > 套利//SKILL.md
+../../../../技能包/🎭情绪 > 套利/SKILL.md

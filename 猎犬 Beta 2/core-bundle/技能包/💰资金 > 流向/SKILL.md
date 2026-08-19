@@ -1,1 +1,1 @@
-/home/sui/claude workspace/猎犬系统/技能包/💰资金 > 流向//SKILL.md
+../../../../技能包/💰资金 > 流向/SKILL.md

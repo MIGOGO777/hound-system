@@ -1,1 +1,1 @@
-/home/sui/claude workspace/猎犬系统/技能包/📊基本面 > 价值//SKILL.md
+../../../../技能包/📊基本面 > 价值/SKILL.md
