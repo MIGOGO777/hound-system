@@ -1,0 +1,9 @@
+# 数据源
+mootdx>=0.10
+requests
+pandas
+stockstats
+
+# 工具
+pyyaml>=6.0
+numpy>=1.24.0

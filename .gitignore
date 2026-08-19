@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 个人研究区 / 归档 / 状态
+.报告区/
+_archive/
+Save.md
+
+# Agent 基础设施（个人）
+.agents/
+.codex/
+.claude/
+.superpowers/
+superpowers/
+
+# 运行时输出与临时脚本
+_output/
+prefetch_value_momentum.json
+价值扫描_30只议题卡_2026-06-30.md
+_tmp_batch_fetch.py
+
+# 环境与密钥
+.env
+*.key
+*.pem
+
+# 系统
+.DS_Store

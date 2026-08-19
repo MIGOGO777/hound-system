@@ -1,0 +1,69 @@
+# 猎犬 Beta 2 核心部件清单
+# 2026-06-30 | purple-coco 打包
+
+name: 猎犬 Beta 2 核心
+version: "2026-06-30"
+state: 全部通过 redkaka 验收
+
+# ===== 五层架构 =====
+
+layers:
+  数据层:
+    - hound_system/data/fetcher.py       # HoundFetcher, 21方法, 只取数绝不算分
+    - hound_system/data/stock_data.py    # HTTP底层, 不封IP
+  初筛器:
+    - hound_system/universe/screener.py  # 剔ST/停牌/低流动性, 客观质检
+  认知层:
+    - 技能包/🏛️政策 > 光谱/SKILL.md      # 主题级, SearXNG路线
+    - 技能包/🔗供应链 > 游丝/SKILL.md     # 主题级, SearXNG路线, 递进式下钻
+    - 技能包/📊基本面 > 价值/SKILL.md     # 个股级, 6把尺
+    - 技能包/📈技术 > 动量/SKILL.md       # 个股级, 5把尺
+    - 技能包/💰资金 > 流向/SKILL.md       # 个股级, 方案C证据包, 5把尺
+    - 技能包/📰新闻 > 催化/SKILL.md       # 个股级, 5把尺
+    - 技能包/🎭情绪 > 套利/SKILL.md       # 个股级, 需集思录cookie
+  调度层:
+    - 调度协议/SKILL.md                  # §0-§8 完整协议, 主agent操作手册
+  审核层:
+    - 主agent编排 + 议题卡11字段
+
+# ===== 组合配方（13个全✅）=====
+
+recipes:
+  取交集型:
+    - 资金+价值=底部反转       [金标准]
+    - 价值+催化=确定性反转
+    - 价值+动量=价值发现启动
+    - 资金+催化=事件爆发
+  时序触发型:
+    - 催化→动量=加速段         [双agent共识已补]
+    - 资金潜伏→催化引爆
+  映射串联型:
+    - 光谱→个股                [主干道,最高频]
+    - 光谱→游丝                [产业链研究]
+    - 催化→游丝
+    - 动量→游丝
+  深核子型:
+    - 游丝→价值 = 被低估的隐形冠军
+    - 游丝→资金 = 约束被市场定价
+
+# ===== 关键设计决策 =====
+
+decisions:
+  - §0铁律: 判断永远在子agent读SKILL时发生, 主agent不写阈值
+  - 资金方案C: push2his/push2废弃, 用量价/位置/融资/大宗/筹码组成代理证据包
+  - 东财解绑: get_fund_flow不再调stock_fund_flow_120d
+  - 3机制母版: green-coco发现原2母版混了3种逻辑, 拆为取交集/时序触发/映射串联
+  - 映射环: 方向名→get_concept_blocks→个股池→纯度过滤(high/medium/low)→行业辅助
+  - 数据质量: 所有资金证据带data_quality+missing, LOW/NO_DATA不给高优先级
+  - 并发: 主agent不并发, 子agent(V4 Flash)并发
+  - 存档: 旧卡不覆盖, 新版另存
+
+# ===== 文件统计 =====
+
+stats:
+  核心代码: 2个Python文件 (fetcher.py + stock_data.py)
+  技能镜头: 7个SKILL.md
+  调度协议: 1个SKILL.md (§0-§8)
+  实战验证: 22张样板卡 (8张精选入核心包)
+  组合配方: 13个全✅
+  Python方法: HoundFetcher 21个get_*方法 + 4个helper
